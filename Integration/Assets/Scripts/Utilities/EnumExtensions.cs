@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Assets.Scripts.LoadingSystems.Utilities
+namespace Assets.Scripts.Utilities
 {
-    public static class TypeExtensions
+    public static class EnumExtensions
     {
         public static TAttribute GetEnumMemberAttribute<TAttribute>(this Type enumType, string enumMemberName)
             where TAttribute : Attribute

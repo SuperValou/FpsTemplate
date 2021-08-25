@@ -13,12 +13,12 @@ TagManager:
   - UI
   - 
   - 
+  - Player
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Environment/Floor
+  - Environment/Walls
+  - Environment/Ceiling
+  - Environment/ImmovableProps
   - 
   - 
   - 
