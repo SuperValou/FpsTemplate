@@ -1,8 +1,8 @@
-﻿using Assets.Scripts.Controls.Inputs;
-using Assets.Scripts.Utilities;
+﻿using Assets.Project.Scripts.Controls.Inputs;
+using Assets.Project.Scripts.Utilities;
 using UnityEngine;
 
-namespace Assets.Scripts.Controls
+namespace Assets.Project.Scripts.Controls
 {
     [RequireComponent(typeof(CharacterController))]
     public class FirstPersonController : MonoBehaviour

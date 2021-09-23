@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Assets.Scripts.Controls.Inputs
+namespace Assets.Project.Scripts.Controls.Inputs
 {
     public class MouseKeyboardInputManager : AbstractInputManager
     {

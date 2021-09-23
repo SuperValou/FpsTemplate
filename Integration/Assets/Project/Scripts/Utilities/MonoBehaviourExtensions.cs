@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Assets.Scripts.Utilities
+namespace Assets.Project.Scripts.Utilities
 {
     public static class MonoBehaviourExtensions
     {

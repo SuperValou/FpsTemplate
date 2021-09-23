@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Assets.Scripts.Controls
+namespace Assets.Project.Scripts.Controls
 {
     public class AimAssist : MonoBehaviour
     {
