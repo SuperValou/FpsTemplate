@@ -5,6 +5,7 @@
     "com.unity.progrids": "3.0.3-preview.6",
     "com.unity.recorder": "3.0.1",
     "com.unity.test-framework": "1.1.29",
+    "com.unity.testtools.codecoverage": "1.1.0",
     "com.unity.textmeshpro": "2.1.6",
     "com.unity.timeline": "1.2.18",
     "com.unity.ugui": "1.0.0",
