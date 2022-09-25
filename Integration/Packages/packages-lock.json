@@ -1,8 +1,22 @@
 {
   "dependencies": {
+    "com.supervalou.unikit": {
+      "version": "https://github.com/SuperValou/UniKit.git#1.2.0",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "5b4af16b4eba7a2ec8aa22992efc1a74ef258979"
+    },
     "com.unity.ext.nunit": {
       "version": "1.0.6",
       "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.inputsystem": {
+      "version": "1.0.2",
+      "depth": 0,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"

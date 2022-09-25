@@ -1,6 +1,6 @@
-﻿using Assets.Project.Scripts.Controls.Inputs;
-using Assets.Project.Scripts.Utilities;
+using Packages.UniKit.Runtime.Extensions;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Assets.Project.Scripts.Controls
 {
@@ -12,6 +12,18 @@ namespace Assets.Project.Scripts.Controls
         [Header("Values")]
         [Tooltip("How fast the player moves (meters per second).")]
         public float walkSpeed = 10f;
+
+        [Tooltip("How fast the player turns her head (degrees per second).")]
+        public float lookControllerSpeed = 180f;
+
+        [Tooltip("How fast the player turns her head (degrees per delta pixel).")]
+        public float lookMouseSensitivity = 0.05f;
+
+        [Tooltip("How strong the damping of look speed change is (smaller values result in 'snappier' reactions).")]
+        public float lookDamping = 0.02f;
+
+        [Tooltip("How strong the damping of move speed change is (smaller values result in 'snappier' reactions).")]
+        public float moveDamping = 0.1f;
 
         [Tooltip("How fast the player jumps when hitting the jump button (meters per second).")]
         public float jumpSpeed = 8f;
@@ -28,22 +40,33 @@ namespace Assets.Project.Scripts.Controls
 
         [Header("Parts")]
         public Transform headTransform;
-
-        [Header("References")]
-        public AbstractInputManager inputManager;
-
+        
 
         // -- Class
 
         private Transform _transform;
         private CharacterController _controller;
 
+        // inputs
+        private Vector2 _moveInputSpeed;
+        private Vector2 _lookInputVector;
+        private bool _jumpButtonDown;
+
+        private Vector2 _smoothedMoveInputSpeed;
+        private Vector2 _smoothedLookInputVector;
+
+        private Vector2 _moveInputDampingVelocity;
+        private Vector2 _lookInputDampingVelocity;
+
+        private bool _lookInputIsDelta;
+
+        // states
         private bool _isGrounded;
 
         private Vector3 _velocityVector = Vector3.zero;
 
         private float _headPitch = 0; // rotation to look up or down
-
+        
         void Start()
         {
             _transform = this.GetOrThrow<Transform>();
@@ -52,31 +75,53 @@ namespace Assets.Project.Scripts.Controls
 
         void Update()
         {
+            ProcessInputs();
             UpdateMove();
             UpdateLookAround();
         }
 
+        private void ProcessInputs()
+        {
+            _smoothedLookInputVector = Vector2.SmoothDamp(current: _smoothedLookInputVector,
+                                                        target: _lookInputVector,
+                                                        currentVelocity: ref _lookInputDampingVelocity,
+                                                        smoothTime: lookDamping);
+
+            _smoothedMoveInputSpeed = Vector2.SmoothDamp(current: _smoothedMoveInputSpeed,
+                                                      target: _moveInputSpeed,
+                                                      currentVelocity: ref _moveInputDampingVelocity,
+                                                      smoothTime: moveDamping);
+        }
+
         private void UpdateLookAround()
         {
+            Vector2 inputRotation;
+            if (_lookInputIsDelta)
+            {
+                inputRotation = _smoothedLookInputVector * lookMouseSensitivity;
+            }
+            else
+            {
+                inputRotation = _smoothedLookInputVector * lookControllerSpeed * Time.deltaTime;
+            }
+
             // horizontal look
-            Vector2 lookMovement = inputManager.GetLookVector();
-            _transform.Rotate(Vector3.up, lookMovement.x);
+            _transform.Rotate(Vector3.up, inputRotation.x);
 
             // vertical look
-            _headPitch = Mathf.Clamp(_headPitch - lookMovement.y, maxDownPitchAngle, maxUpPitchAngle);
+            float rawPitch = _headPitch - inputRotation.y;
+            _headPitch = Mathf.Clamp(rawPitch, maxDownPitchAngle, maxUpPitchAngle);
             headTransform.localRotation = Quaternion.Euler(_headPitch, 0, 0);
         }
 
         private void UpdateMove()
         {
-            Vector2 inputMovement = inputManager.GetMoveVector();
-
-            if (_isGrounded && inputManager.JumpButtonDown())
+            if (_isGrounded && _jumpButtonDown)
             {
                 _velocityVector.y = jumpSpeed;
             }
 
-            Vector3 localInputSpeedVector = new Vector3(x: inputMovement.x, y: 0, z: inputMovement.y);
+            Vector3 localInputSpeedVector = new Vector3(x: _smoothedMoveInputSpeed.x, y: 0, z: _smoothedMoveInputSpeed.y);
             Vector3 globalInputSpeedVector = _transform.TransformDirection(localInputSpeedVector);
             Vector3 inputSpeedVector = globalInputSpeedVector * walkSpeed;
 
@@ -95,6 +140,24 @@ namespace Assets.Project.Scripts.Controls
             // Actually move the controller
             _controller.Move(_velocityVector * Time.deltaTime);
             _isGrounded = _controller.isGrounded;
+        }
+
+        public void OnMove(InputAction.CallbackContext context)
+        {
+            _moveInputSpeed = context.ReadValue<Vector2>();
+        }
+
+        public void OnLookAround(InputAction.CallbackContext context)
+        {
+            _lookInputVector = context.ReadValue<Vector2>();
+
+            // Pointer values are delta from the last frame, so it's already framerate independant
+            _lookInputIsDelta = context.control.device is Pointer;
+        }
+
+        public void OnJump(InputAction.CallbackContext context)
+        {
+            _jumpButtonDown = context.ReadValueAsButton();
         }
     }
 }

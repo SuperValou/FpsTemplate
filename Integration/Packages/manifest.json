@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "com.supervalou.unikit": "https://github.com/SuperValou/UniKit.git#1.2.0",
     "com.unity.ext.nunit": "1.0.0",
+    "com.unity.inputsystem": "1.0.2",
     "com.unity.probuilder": "4.2.3",
     "com.unity.progrids": "3.0.3-preview.6",
     "com.unity.recorder": "3.0.1",
